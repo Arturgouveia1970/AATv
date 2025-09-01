@@ -1,0 +1,640 @@
+/* src/App.css */
+
+/* ---------- Theme tokens ---------- */
+:root {
+  --bg: #0b0d12;
+  --bg-accent: #121621;
+  --panel: #161b29;
+  --text: #e8ecf1;
+  --text-dim: #a7b0c0;
+  --brand: #6ea8fe;
+  --accent: #3dd68c;
+  --danger: #ff6b6b;
+  --border: #262c3b;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 8px 24px rgba(0,10,40,.25), 0 2px 8px rgba(0,0,0,.25);
+  --sans: Inter, Segoe UI, Roboto, "Helvetica Neue", Arial, system-ui, -apple-system;
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+
+body {
+  font-family: var(--sans);
+  background:
+    radial-gradient(1200px 800px at 80% -10%, #1b2340 0%, transparent 60%) no-repeat,
+    radial-gradient(900px 600px at -10% 120%, #1a2f2c 0%, transparent 55%) no-repeat,
+    var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+/* Smooth scrollbar */
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: #2a3146; border-radius: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- App layout ---------- */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255,255,255,.02), transparent 60%), var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.app-header h1, .app-header .title {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: .2px;
+}
+
+.app-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .app-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Sidebar / channel list ---------- */
+.channel-list {
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+/* Optional list items (if you render buttons/divs inside channel-list) */
+.channel-item {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 10px;
+  margin: 6px 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform .12s ease, border-color .12s ease, background .12s ease;
+}
+.channel-item:hover {
+  transform: translateY(-1px);
+  background: #1b2133;
+  border-color: #334166;
+}
+.channel-item.active {
+  background: #171d2c;
+  border-color: #40558d;
+}
+/* --- Channel list icons --- */
+.channel-item img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  object-position: center;
+  background: radial-gradient(180px 120px at 60% 20%, rgba(110,168,254,.18), transparent 60%), #0f1422;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.35);
+}
+
+.channel-item .meta {
+  display: flex; flex-direction: column;
+}
+.channel-item .name { font-weight: 600; }
+.channel-item .tag  { font-size: 12px; color: var(--text-dim); }
+
+/* ---------- Controls ---------- */
+button {
+  transition: transform 0.1s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+  font: inherit;
+  color: var(--text);
+  background: #151a27;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+button:hover {
+  transform: translateY(-1px);
+  background: #192034;
+  border-color: #324266;
+  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+}
+button.primary {
+  background: linear-gradient(180deg, #425bff, #6251ff);
+  border-color: transparent;
+}
+button.primary:hover { filter: brightness(1.05); }
+
+select {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background-color: #0f1422;
+  color: var(--text);
+}
+
+/* ---------- Player ---------- */
+.video-player-container {
+  background-color: #000;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* If you have a wrapper around the <video> or <HlsPlayer> */
+.video-frame {
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #000;
+}
+
+/* Small caption under player */
+.player-caption {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+/* ---------- Utilities ---------- */
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--accent);
+  background: rgba(61, 214, 140, .12);
+  border: 1px solid rgba(61, 214, 140, .28);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* Keep your original hover scale for any plain buttons not styled above */
+button:where(.ghost, .link) {
+  background: transparent;
+  border: 1px solid transparent;
+}
+button:where(.ghost, .link):hover {
+  transform: scale(1.01);
+}
+
+/* Red badge when using backup */
+.badge.backup {
+  color: var(--danger);
+  background: rgba(255, 107, 107, .12);
+  border-color: rgba(255, 107, 107, .32);
+}
+
+/* Keep a uniform 16:9 area for the player */
+.video-frame {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Mobile drawer */
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 80%;
+  max-width: 320px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+}
+
+/* Mid screens: hide sidebar, make player full width */
+@media (max-width: 1200px) {
+  .app-content {
+    grid-template-columns: 1fr; /* full width */
+  }
+  .channel-list {
+    display: none; /* hide the left sidebar */
+  }
+}
+
+
+/* Show ☰ button only on small screens */
+@media (max-width: 900px) {
+  .app-header .ghost {
+    display: inline-block;
+    font-size: 20px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .app-content {
+    display: block; /* stack player and remove sidebar */
+  }
+
+  .channel-list {
+    display: none; /* hide the sidebar version */
+  }
+}
+
+/* --- MOBILE POLISH --- */
+
+/* Sticky header so the title / ☰ stays visible */
+@media (max-width: 900px) {
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+  }
+}
+
+/* Bigger tap targets for channel rows on touch */
+@media (hover: none) {
+  .channel-item {
+    padding: 12px 12px;
+    min-height: 56px;              /* comfy touch size */
+  }
+}
+
+/* Drawer: make sure it overlays the player and prevents touch-through */
+.drawer { z-index: 1000; }
+.drawer-backdrop { z-index: 900; }
+
+/* Prevent accidental text selection during rapid taps */
+.channel-item, .nav button, .btn, button {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Respect iOS safe areas */
+@supports (padding: max(0px)) {
+  .drawer {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Consistent icon sizes — single source of truth */
+.channel-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  object-position: center;
+  background: #0f1422;  /* optional: subtle background for transparent logos */
+  border-radius: 8px;
+  padding: 4px;
+}
+
+/* If you ever show an image in the header, keep it smaller */
+.app-header img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  object-position: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* Keep the header icon a bit smaller so the title breathes */
+.app-header img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  object-position: center;
+  background: #0f1422;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.3);
+}
+
+/* Under-player logo spot */
+.under-player {
+  margin-top: 30px;
+  padding: 30px 0;
+  text-align: center;
+
+  /* Gradient background (orange → black) */
+  background: linear-gradient(to bottom, #ff6600, #000);
+  border-radius: 12px;
+}
+
+.under-player img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 50%; /* perfect circle */
+  background: radial-gradient(circle at center, #111 0%, #ff8000 55%, #000 100%);
+  padding: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  display: block;
+  margin: 0 auto;
+}
+
+.under-player img:hover {
+  transform: scale(1.08);
+  opacity: 1;
+}
+
+.app-footer {
+  display: flex;
+  align-items: flex-end;   /* push text to bottom */
+  justify-content: center; /* keep it centered horizontally */
+  min-height: 40px;       
+}
+
+.app-footer p {
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.title.brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+  background: linear-gradient(45deg, #ff8000, #ff0000);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.05em;
+}
+
+.channel-list li img {
+  width: 56px !important;     /* try 64px if you want even bigger */
+  height: 56px !important;
+  object-fit: contain;
+  object-position: center;
+  background: #0f1422;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.35);
+  display: block;
+}
+
+/* Make the channel icon above the player larger */
+.video-player-container > div:first-child img {
+  width: 72px !important;
+  height: 72px !important;
+  padding: 6px;
+  border-radius: 12px;
+  background: #0f1422;
+  box-shadow: 0 6px 14px rgba(0,0,0,.35);
+}
+
+/* Make channel-list icons bigger even if inline styles exist */
+
+/* Channel list icons (uses the class we added) */
+.channel-list .channel-item img.channel-icon {
+  width: 56px !important;   /* use 64px if you want even bigger */
+  height: 56px !important;
+  object-fit: contain;
+  object-position: center;
+  background: #0f1422;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.35);
+  display: block;
+}
+
+/* Icon above the player — make it larger even if inline styles exist */
+.video-player-container > div:first-child img {
+  width: 72px !important;
+  height: 72px !important;
+  padding: 6px;
+  border-radius: 12px;
+  background: #0f1422;
+  box-shadow: 0 6px 14px rgba(0,0,0,.35);
+}
+
+/* --- Channel list hover effect --- */
+.channel-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.channel-list-item:hover {
+  background: #1b2133;
+  transform: translateY(-2px);
+}
+
+.channel-icon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  background: #0f1422;
+  border-radius: 8px;
+  padding: 6px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.channel-list-item:hover .channel-icon {
+  transform: scale(1.1);
+}
+
+.channel-name {
+  font-weight: 600;
+}
+
+/* --- Channel list row + hover --- */
+.channel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: transparent;              /* ensure no generic button styles leak */
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.channel-row:hover {
+  background: #1b2133;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,.25);
+}
+
+.channel-icon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  object-position: center;
+  background: #0f1422;
+  border-radius: 10px;
+  padding: 6px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.channel-row:hover .channel-icon {
+  transform: scale(1.08);
+}
+
+.channel-name {
+  font-weight: 600;
+  color: #e8ecf1;
+}
+
+/* === Mobile tweaks: smaller footer, same logo size, roomier logo area === */
+@media (max-width: 900px) {
+  /* Smaller footer on phones */
+  .app-footer {
+    padding: 6px !important;
+    font-size: 12px !important;
+    margin-top: 8px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Make the logo area (container) a bit taller,
+     but KEEP the logo image the same size/shape */
+  .under-player {
+    margin-top: 24px !important;
+    padding: 20px 0 !important;   /* more presence without changing the logo itself */
+  }
+
+  /* Force the logo image to stay the desktop size & shape */
+  .under-player img {
+    width: 140px !important;
+    height: 140px !important;
+    padding: 14px !important;
+    border-radius: 50% !important;   /* keep it round if that’s how it is on desktop */
+  }
+}
+
+/* Hide footer on small screens */
+@media (max-width: 600px) {
+  .app-footer {
+    display: none !important;
+  }
+
+  /* Optional: add a touch more breathing room since footer is gone */
+  .under-player {
+    margin-top: 150px;
+    margin-bottom: 8px; /* tweak to taste */
+  }
+}
+
+/* Shrink logo in under-player on small screens */
+@media (max-width: 600px) {
+  .under-player img {
+    width: 100px !important;   /* smaller size */
+    height: 100px !important;
+    padding: 8px !important;   /* tighter padding */
+  }
+}
+
+@media (max-width: 900px) {
+  /* Smaller header height + compact style */
+  .app-header {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+
+  /* Brand text smaller */
+  .app-header .title.brand {
+    font-size: 1.2rem; /* was 1.8rem */
+  }
+
+  /* Compact TV / Movies buttons */
+  .app-header button {
+    padding: 4px 8px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  /* Space buttons closer */
+  .app-header > div {
+    gap: 4px !important;
+  }
+}
+
+/* --- TV/Movies pill toggle --- */
+.view-toggle {
+  display: flex;
+  background: #111727;
+  border-radius: 20px;
+  padding: 3px;
+}
+
+.view-toggle button {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle button.active {
+  background: linear-gradient(180deg, #425bff, #6251ff);
+  color: white;
+  font-weight: 600;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,37 @@
+{
+  "name": "tvstream_frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+  "kill:proxy": "lsof -ti :5174 | xargs kill -9 || true",
+  "dev:proxy": "HLS_ALLOW_RELAXED=true PORT=5174 node ../hls-proxy.mjs",
+  "dev": "npm run kill:proxy && concurrently -k --names \"PROXY,APP\" --prefix-colors \"yellow,cyan\" \"npm:dev:proxy\" \"vite --open\"",
+  "build": "vite build",
+  "lint": "eslint .",
+  "preview": "vite preview"
+},
+  "dependencies": {
+    "axios": "^1.11.0",
+    "hls.js": "^1.6.9",
+    "i18next": "^25.3.2",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-i18next": "^15.6.1",
+    "react-router-dom": "^6.30.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.2.1",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.32.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "vite": "^5.3.4"
+  }
+}
