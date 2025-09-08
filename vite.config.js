@@ -1,9 +1,57 @@
 // vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      injectRegister: 'auto',
+      registerType: 'autoUpdate',
+      includeAssets: [
+        'icons/AATv_icons/AATv_192x192.png',
+        'icons/AATv_icons/AATv_512x512.png'
+      ],
+      manifest: {
+        name: 'AATv',
+        short_name: 'AATv',
+        description: 'Lightweight live TV streaming.',
+        start_url: '/',
+        scope: '/',
+        display: 'standalone',
+        background_color: '#0f172a',
+        theme_color: '#0f172a',
+        icons: [
+          {
+            src: 'icons/AATv_icons/AATv_192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'icons/AATv_icons/AATv_512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) =>
+              url.pathname.endsWith('.m3u8') || url.pathname.endsWith('.ts'),
+            handler: 'NetworkOnly'
+          }
+        ]
+      }
+    })
+    
+    
+    
+  ],
   server: {
     port: 3000,
     proxy: {
@@ -21,21 +69,21 @@ export default defineConfig({
         rewrite: (p) => p.replace(/^\/cgtn/, ''),
         configure: (proxy) => {
           proxy.on('proxyReq', (proxyReq) => {
-            proxyReq.setHeader('Referer', 'https://www.cgtn.com/');
-            proxyReq.setHeader('Origin', 'https://www.cgtn.com');
+            proxyReq.setHeader('Referer', 'https://www.cgtn.com/')
+            proxyReq.setHeader('Origin', 'https://www.cgtn.com')
             proxyReq.setHeader(
               'User-Agent',
               'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36'
-            );
-          });
+            )
+          })
           proxy.on('error', (err, _req, res) => {
-            console.error('[vite-proxy] CGTN error:', err?.message || err);
+            console.error('[vite-proxy] CGTN error:', err?.message || err)
             try {
-              res.writeHead(502, { 'Content-Type': 'text/plain' });
-              res.end('Proxy error');
+              res.writeHead(502, { 'Content-Type': 'text/plain' })
+              res.end('Proxy error')
             } catch {}
-          });
-        },
+          })
+        }
       },
 
       // Generic HLS proxy → your Node hls-proxy.mjs server
@@ -46,14 +94,14 @@ export default defineConfig({
         rewrite: (p) => p,
         configure: (proxy) => {
           proxy.on('error', (err, _req, res) => {
-            console.error('[vite-proxy] HLS error:', err?.message || err);
+            console.error('[vite-proxy] HLS error:', err?.message || err)
             try {
-              res.writeHead(502, { 'Content-Type': 'text/plain' });
-              res.end('HLS proxy error');
+              res.writeHead(502, { 'Content-Type': 'text/plain' })
+              res.end('HLS proxy error')
             } catch {}
-          });
-        },
-      },
-    },
-  },
+          })
+        }
+      }
+    }
+  }
 })

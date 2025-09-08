@@ -4,33 +4,69 @@ import CategoryList from './components/CategoryList';
 import ChannelList from './components/ChannelList';
 import Player from './components/Player';
 import MovieList from './components/MovieList';
+import { loadState, saveState } from './lib/state';
 import './App.css';
 
 function App() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedChannel, setSelectedChannel] = useState(null);
-  const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [view, setView] = useState('tv'); // 'tv' | 'movies'
-  const [drawerOpen, setDrawerOpen] = useState(false); // mobile drawer
+  // Load once from localStorage
+  const saved = loadState();
+
+  // Seed initial state from saved values
+  const [selectedCategory, setSelectedCategory] = useState(saved.selectedCategory ?? null);
+  const [selectedChannel, setSelectedChannel]   = useState(saved.selectedChannel ?? null);
+  const [selectedLanguage, setSelectedLanguage] = useState(saved.selectedLanguage ?? null);
+  const [view, setView]                         = useState(saved.view ?? 'tv'); // 'tv' | 'movies'
+  const [drawerOpen, setDrawerOpen]             = useState(false); // mobile drawer
 
   // Close drawer when switching to Movies view
   useEffect(() => {
     if (view !== 'tv') setDrawerOpen(false);
   }, [view]);
 
+  // Persist view changes
+  useEffect(() => {
+    saveState({ view });
+  }, [view]);
+
+  // Persist category/language changes
+  useEffect(() => {
+    saveState({ selectedCategory, selectedLanguage });
+  }, [selectedCategory, selectedLanguage]);
+
+  // Persist selected channel (store essential fields only)
+  useEffect(() => {
+    if (selectedChannel) {
+      const { id, name, url, source, stream_url, backup, logo } = selectedChannel;
+      saveState({
+        selectedChannel: { id, name, url, source, stream_url, backup, logo },
+      });
+    } else {
+      saveState({ selectedChannel: null });
+    }
+  }, [selectedChannel]);
+
+  // Handlers (also save immediately for snappier persistence)
   const handleCategorySelect = (slug) => {
     setSelectedCategory(slug);
     setSelectedChannel(null);
+    saveState({ selectedCategory: slug, selectedChannel: null });
   };
 
   const handleChannelSelect = (channel) => {
     setSelectedChannel(channel);
+    if (channel) {
+      const { id, name, url, source, stream_url, backup, logo } = channel;
+      saveState({ selectedChannel: { id, name, url, source, stream_url, backup, logo } });
+    } else {
+      saveState({ selectedChannel: null });
+    }
   };
 
   const handleLanguageChange = (lang) => {
     setSelectedLanguage(lang);
     setSelectedCategory(null);
     setSelectedChannel(null);
+    saveState({ selectedLanguage: lang, selectedCategory: null, selectedChannel: null });
   };
 
   return (
@@ -46,16 +82,17 @@ function App() {
         >
           ☰
         </button>
-        {/*<h1 className="title" style={{ marginLeft: 6 }}>
-          <img 
-            src="/icons/AATv_icons/AATv_48x48.png" 
-            alt="AATv logo" 
-            style={{ height: 36, verticalAlign: 'middle' }} 
+
+        {/* Optional image logo (commented out) */}
+        {/* <h1 className="title" style={{ marginLeft: 6 }}>
+          <img
+            src="/icons/AATv_icons/AATv_48x48.png"
+            alt="AATv logo"
+            style={{ height: 36, verticalAlign: 'middle' }}
           />
         </h1> */}
 
         <h1 className="title brand">AATv</h1>
-        
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button
@@ -123,10 +160,9 @@ function App() {
           {/* Player (desktop & mobile) */}
           <main>
             <div className="video-player-container">
+              <Player channel={selectedChannel} onLanguageChange={handleLanguageChange} />
 
-              <Player channel={selectedChannel} />
-
-              {/* Logo under the player (replaces missing /icons/app-logo.svg) */}
+              {/* Logo under the player */}
               <div
                 className="under-player"
                 style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}
@@ -137,7 +173,6 @@ function App() {
                   style={{ height: 120, opacity: 0.9 }}
                 />
               </div>
-
             </div>
           </main>
         </div>
@@ -162,7 +197,9 @@ function App() {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: 0 }}>Browse</h3>
-          <button className="ghost" onClick={() => setDrawerOpen(false)} aria-label="Close">✕</button>
+          <button className="ghost" onClick={() => setDrawerOpen(false)} aria-label="Close">
+            ✕
+          </button>
         </div>
 
         <div style={{ marginTop: 12 }}>
@@ -182,6 +219,7 @@ function App() {
             onSelect={(slug) => {
               setSelectedCategory(slug);
               setSelectedChannel(null);
+              saveState({ selectedCategory: slug, selectedChannel: null });
               // keep drawer open to pick a channel
             }}
           />
@@ -204,6 +242,12 @@ function App() {
               selectedCategorySlug={selectedCategory}
               onSelect={(ch) => {
                 setSelectedChannel(ch);
+                if (ch) {
+                  const { id, name, url, source, stream_url, backup, logo } = ch;
+                  saveState({ selectedChannel: { id, name, url, source, stream_url, backup, logo } });
+                } else {
+                  saveState({ selectedChannel: null });
+                }
                 setDrawerOpen(false); // close after picking a channel
               }}
               selectedId={selectedChannel?.id}
@@ -211,11 +255,11 @@ function App() {
           </div>
         </div>
       </div>
+
       {/* --- Footer --- */}
       <footer className="app-footer">
         <p>© {new Date().getFullYear()} AATv • Streaming made simple</p>
       </footer>
-
     </div>
   );
 }
