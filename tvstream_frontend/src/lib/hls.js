@@ -1,82 +1,16 @@
-// tvstream_frontend/api/hls.js
+// tvstream_frontend/src/lib/hls.js
 
-import { Readable } from 'stream' // Node 18+ on Vercel is fine
+const HLS_PROXY = import.meta.env?.VITE_HLS_PROXY || '/api/hls?url='
 
-const UA =
-  process.env.USER_AGENT ||
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36'
+/** Is this an HLS URL (.m3u8)? */
+export const isHls = (u) =>
+  typeof u === 'string' && u.toLowerCase().includes('.m3u8')
 
-function setCors(res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Range,User-Agent,Referer,Origin')
-  res.setHeader('Access-Control-Expose-Headers', '*')
-}
+/** Has this URL already been wrapped by our proxy? */
+export const alreadyProxied = (u) =>
+  typeof u === 'string' &&
+  (/^\/api\/hls(\?|$)/.test(u) || /^\/hls\?url=/.test(u))
 
-function extraHeadersFor(urlObj) {
-  const h = {}
-  // Example site-specific rules:
-  if (urlObj.hostname.includes('live.cgtn.com')) {
-    h['Referer'] = 'https://www.cgtn.com'
-    h['Origin'] = 'https://www.cgtn.com'
-  }
-  // add more cases here as needed
-  return h
-}
-
-export default async function handler(req, res) {
-  try {
-    setCors(res)
-
-    if (req.method === 'OPTIONS') {
-      res.status(204).end()
-      return
-    }
-
-    const raw = (req.query?.url ?? req.url?.split('?url=')[1]) || ''
-    if (!raw) {
-      res.status(400).send('Missing url')
-      return
-    }
-
-    const decoded = decodeURIComponent(raw)
-    const u = new URL(decoded)
-
-    // Forward useful headers (UA, Range for segments)
-    const headers = {
-      'User-Agent': UA,
-      ...(req.headers.range ? { Range: req.headers.range } : {}),
-      ...extraHeadersFor(u),
-    }
-
-    const upstream = await fetch(u.toString(), { headers })
-
-    // Mirror status and content-type
-    res.status(upstream.status)
-    const ct = upstream.headers.get('content-type')
-    if (ct) res.setHeader('content-type', ct)
-
-    // Some CDNs include cache headers; preserve if present
-    const cacheControl = upstream.headers.get('cache-control')
-    if (cacheControl) res.setHeader('cache-control', cacheControl)
-
-    // HEAD requests (or no body)
-    if (req.method === 'HEAD' || !upstream.body) {
-      res.end()
-      return
-    }
-
-    // Stream body efficiently
-    const nodeStream = Readable.fromWeb(upstream.body)
-    nodeStream.on('error', () => {
-      try { res.end() } catch {}
-    })
-    nodeStream.pipe(res)
-  } catch (e) {
-    console.error('[api/hls] error', e)
-    try {
-      setCors(res)
-      res.status(502).send('Bad gateway')
-    } catch {}
-  }
-}
+/** Wrap a raw absolute URL with the proxy endpoint */
+export const withApiProxy = (absoluteUrl) =>
+  `${HLS_PROXY}${encodeURIComponent(absoluteUrl)}`

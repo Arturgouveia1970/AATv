@@ -1,9 +1,27 @@
-# tvstream (AATv)
+# AATv
 
-- `tvstream_frontend/` — Vite + React app
-- `tvstream_backend/`  — Django API
+AATv is a two-part project:
 
-## Dev
-Frontend: `cd tvstream_frontend && npm i && npm run dev`
-Backend:  `cd tvstream_backend && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && python manage.py runserver`
-EOF
+- **tvstream_frontend/** — Vite + React app that plays HLS/MP4 streams and browses channels by category/language.
+- **tvstream_backend/** — Django API (channels, categories, future auth).
+
+Monorepo layout:
+
+
+---
+
+## Requirements
+
+- **Node.js** 18+ and npm
+- **Python** 3.10+ and pip
+- macOS/Linux or WSL (Windows)
+
+---
+
+## Quick Start
+
+### Frontend (Vite + React)
+```bash
+cd tvstream_frontend
+npm install
+npm run dev

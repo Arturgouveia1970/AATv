@@ -1,21 +1,22 @@
 {
-    "name": "AATv",
-    "short_name": "AATv",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#FF1E00",
-    "theme_color": "#FF8000",
-    "icons": [
-      {
-        "src": "/icons/AATv_icons/AATv_192x192.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "/icons/AATv_icons/AATv_512x512.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      }
-    ]
-  }
-  
+  "name": "AATv",
+  "short_name": "AATv",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/icons/AATv_icons/AATv_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/AATv_icons/AATv_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
