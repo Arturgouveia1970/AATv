@@ -5,47 +5,44 @@ import ChannelList from './components/ChannelList';
 import Player from './components/Player';
 import MovieList from './components/MovieList';
 import { loadState, saveState } from './lib/state';
+import InstallPrompt from './components/InstallPrompt';   // NEW
+import IosInstallTip from './components/IosInstallTip';   // NEW
+import { onServiceWorkerUpdate } from './utils/sw-update';// NEW
 import './App.css';
 
 function App() {
-  // Load once from localStorage
   const saved = loadState();
 
-  // Seed initial state from saved values
   const [selectedCategory, setSelectedCategory] = useState(saved.selectedCategory ?? null);
-  const [selectedChannel, setSelectedChannel]   = useState(saved.selectedChannel ?? null);
+  const [selectedChannel,  setSelectedChannel]  = useState(saved.selectedChannel ?? null);
   const [selectedLanguage, setSelectedLanguage] = useState(saved.selectedLanguage ?? null);
-  const [view, setView]                         = useState(saved.view ?? 'tv'); // 'tv' | 'movies'
-  const [drawerOpen, setDrawerOpen]             = useState(false); // mobile drawer
+  const [view, setView]                         = useState(saved.view ?? 'tv');
+  const [drawerOpen, setDrawerOpen]             = useState(false);
 
-  // Close drawer when switching to Movies view
+  // SW update → offer refresh
   useEffect(() => {
-    if (view !== 'tv') setDrawerOpen(false);
-  }, [view]);
+    let dismissed = false;
+    onServiceWorkerUpdate(() => {
+      if (dismissed) return;
+      const ok = window.confirm('A new version of AATv is available. Update now?');
+      if (ok) window.location.reload();
+      else dismissed = true;
+    });
+  }, []);
 
-  // Persist view changes
-  useEffect(() => {
-    saveState({ view });
-  }, [view]);
+  useEffect(() => { if (view !== 'tv') setDrawerOpen(false); }, [view]);
+  useEffect(() => { saveState({ view }); }, [view]);
+  useEffect(() => { saveState({ selectedCategory, selectedLanguage }); }, [selectedCategory, selectedLanguage]);
 
-  // Persist category/language changes
-  useEffect(() => {
-    saveState({ selectedCategory, selectedLanguage });
-  }, [selectedCategory, selectedLanguage]);
-
-  // Persist selected channel (store essential fields only)
   useEffect(() => {
     if (selectedChannel) {
       const { id, name, url, source, stream_url, backup, logo } = selectedChannel;
-      saveState({
-        selectedChannel: { id, name, url, source, stream_url, backup, logo },
-      });
+      saveState({ selectedChannel: { id, name, url, source, stream_url, backup, logo } });
     } else {
       saveState({ selectedChannel: null });
     }
   }, [selectedChannel]);
 
-  // Handlers (also save immediately for snappier persistence)
   const handleCategorySelect = (slug) => {
     setSelectedCategory(slug);
     setSelectedChannel(null);
@@ -73,7 +70,6 @@ function App() {
     <div className="app-container">
       {/* Header */}
       <header className="app-header">
-        {/* Mobile menu button (shown via CSS @media rule) */}
         <button
           className="ghost"
           aria-label="Open channels"
@@ -82,15 +78,6 @@ function App() {
         >
           ☰
         </button>
-
-        {/* Optional image logo (commented out) */}
-        {/* <h1 className="title" style={{ marginLeft: 6 }}>
-          <img
-            src="/icons/AATv_icons/AATv_48x48.png"
-            alt="AATv logo"
-            style={{ height: 36, verticalAlign: 'middle' }}
-          />
-        </h1> */}
 
         <h1 className="title brand">AATv</h1>
 
@@ -109,24 +96,23 @@ function App() {
           >
             Movies
           </button>
+
+          {/* Install button shows on Android/desktop when available */}
+          <InstallPrompt />
         </div>
       </header>
+
+      {/* Small iOS hint (only shows on iPhone/iPad & not already installed) */}
+      <div style={{ padding: '0 12px' }}>
+        <IosInstallTip />
+      </div>
 
       {/* Main content */}
       {view === 'tv' ? (
         <div className="app-content">
-          {/* Sidebar (desktop) */}
           <aside className="channel-list">
             <div style={{ marginBottom: 10 }}>
-              <h3
-                style={{
-                  margin: '6px 0 8px',
-                  fontSize: 14,
-                  opacity: 0.8,
-                  letterSpacing: '.08em',
-                  textTransform: 'uppercase',
-                }}
-              >
+              <h3 style={{ margin: '6px 0 8px', fontSize: 14, opacity: 0.8, letterSpacing: '.08em', textTransform: 'uppercase' }}>
                 Categories
               </h3>
               <CategoryList
@@ -136,15 +122,7 @@ function App() {
             </div>
 
             <div>
-              <h3
-                style={{
-                  margin: '12px 0 8px',
-                  fontSize: 14,
-                  opacity: 0.8,
-                  letterSpacing: '.08em',
-                  textTransform: 'uppercase',
-                }}
-              >
+              <h3 style={{ margin: '12px 0 8px', fontSize: 14, opacity: 0.8, letterSpacing: '.08em', textTransform: 'uppercase' }}>
                 Channels
               </h3>
               <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: 6 }}>
@@ -157,16 +135,11 @@ function App() {
             </div>
           </aside>
 
-          {/* Player (desktop & mobile) */}
           <main>
             <div className="video-player-container">
               <Player channel={selectedChannel} onLanguageChange={handleLanguageChange} />
 
-              {/* Logo under the player */}
-              <div
-                className="under-player"
-                style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}
-              >
+              <div className="under-player" style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
                 <img
                   src="/icons/AATv_icons/AATv_192x192.png"
                   alt="AATv logo"
@@ -180,38 +153,16 @@ function App() {
         <MovieList />
       )}
 
-      {/* --- Mobile drawer (channels) --- */}
-      {drawerOpen && (
-        <div
-          className="drawer-backdrop"
-          onClick={() => setDrawerOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      <div
-        className={`drawer ${drawerOpen ? 'open' : ''}`}
-        role="dialog"
-        aria-label="Channels"
-        aria-modal="true"
-      >
+      {/* Mobile drawer */}
+      {drawerOpen && <div className="drawer-backdrop" onClick={() => setDrawerOpen(false)} aria-hidden="true" />}
+      <div className={`drawer ${drawerOpen ? 'open' : ''}`} role="dialog" aria-label="Channels" aria-modal="true">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: 0 }}>Browse</h3>
-          <button className="ghost" onClick={() => setDrawerOpen(false)} aria-label="Close">
-            ✕
-          </button>
+          <button className="ghost" onClick={() => setDrawerOpen(false)} aria-label="Close">✕</button>
         </div>
 
         <div style={{ marginTop: 12 }}>
-          <h3
-            style={{
-              margin: '6px 0 8px',
-              fontSize: 14,
-              opacity: 0.8,
-              letterSpacing: '.08em',
-              textTransform: 'uppercase',
-            }}
-          >
+          <h3 style={{ margin: '6px 0 8px', fontSize: 14, opacity: 0.8, letterSpacing: '.08em', textTransform: 'uppercase' }}>
             Categories
           </h3>
           <CategoryList
@@ -220,21 +171,12 @@ function App() {
               setSelectedCategory(slug);
               setSelectedChannel(null);
               saveState({ selectedCategory: slug, selectedChannel: null });
-              // keep drawer open to pick a channel
             }}
           />
         </div>
 
         <div style={{ marginTop: 12 }}>
-          <h3
-            style={{
-              margin: '12px 0 8px',
-              fontSize: 14,
-              opacity: 0.8,
-              letterSpacing: '.08em',
-              textTransform: 'uppercase',
-            }}
-          >
+          <h3 style={{ margin: '12px 0 8px', fontSize: 14, opacity: 0.8, letterSpacing: '.08em', textTransform: 'uppercase' }}>
             Channels
           </h3>
           <div style={{ maxHeight: '55vh', overflowY: 'auto', paddingRight: 6 }}>
@@ -248,7 +190,7 @@ function App() {
                 } else {
                   saveState({ selectedChannel: null });
                 }
-                setDrawerOpen(false); // close after picking a channel
+                setDrawerOpen(false);
               }}
               selectedId={selectedChannel?.id}
             />
@@ -256,7 +198,6 @@ function App() {
         </div>
       </div>
 
-      {/* --- Footer --- */}
       <footer className="app-footer">
         <p>© {new Date().getFullYear()} AATv • Streaming made simple</p>
       </footer>
