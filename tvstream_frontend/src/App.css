@@ -623,6 +623,57 @@ button:where(.ghost, .link):hover {
   font-weight: 600;
 }
 
+.chip:hover {
+  background: var(--chip-hover, rgba(255,255,255,0.04));
+}
+
+/* Mobile first: drawer can show on small screens */
+/* Drawer anchored LEFT */
+.drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: -320px;       /* hide off the LEFT */
+  right: auto;        /* ensure right is not driving layout */
+  width: 320px;
+  background: #111;
+  color: #fff;
+  padding: 16px;
+  z-index: 1001;
+  transition: left 250ms ease;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.4);
+}
+
+.drawer.open {
+  left: 0;            /* slide IN from the LEFT */
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 1000;
+}
+
+
+/* Desktop: hide drawer & backdrop, hide hamburger; show sidebar */
+@media (min-width: 900px) {
+  .drawer,
+  .drawer.open,
+  .drawer-backdrop { display: none !important; }
+
+  .app-header .ghost { display: none; } /* hamburger off on desktop */
+
+  /* ensure desktop sidebar is visible on large screens */
+  aside.channel-list { display: block; }
+}
+
+/* Mobile: hide the desktop sidebar */
+@media (max-width: 899px) {
+  aside.channel-list { display: none; }
+}
+
+
 
 
 

@@ -27,8 +27,8 @@ export default function CategoryList({ selectedCategorySlug, onSelect }) {
 
   return (
     <div>
-      <h2>{t('categories')}</h2>
-      <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+      <h2>{t('')}</h2>
+      <ul style={{ listStyle: 'none', paddingLeft: 0 , marginTop: 50 }}>
         {categories.map(cat => {
           // Handle both object and string
           const slug = typeof cat === 'object' ? cat.slug || cat.id || String(cat) : String(cat);

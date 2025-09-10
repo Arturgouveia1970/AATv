@@ -11,12 +11,14 @@ function App() {
   // Load once from localStorage
   const saved = loadState();
 
-  // Seed initial state from saved values
+  // Seed initial state from saved values (BUT do not restore selectedChannel to avoid autoplay)
   const [selectedCategory, setSelectedCategory] = useState(saved.selectedCategory ?? null);
-  const [selectedChannel, setSelectedChannel]   = useState(saved.selectedChannel ?? null);
-  const [selectedLanguage, setSelectedLanguage] = useState(saved.selectedLanguage ?? null);
+  const [selectedChannel, setSelectedChannel]   = useState(null); // <-- always start empty
   const [view, setView]                         = useState(saved.view ?? 'tv'); // 'tv' | 'movies'
   const [drawerOpen, setDrawerOpen]             = useState(false); // mobile drawer
+
+  // NEW: track a "fresh open" so drawer shows Categories first
+  const [drawerFreshOpen, setDrawerFreshOpen]   = useState(false);
 
   // Close drawer when switching to Movies view
   useEffect(() => {
@@ -28,10 +30,10 @@ function App() {
     saveState({ view });
   }, [view]);
 
-  // Persist category/language changes
+  // Persist category changes
   useEffect(() => {
-    saveState({ selectedCategory, selectedLanguage });
-  }, [selectedCategory, selectedLanguage]);
+    saveState({ selectedCategory });
+  }, [selectedCategory]);
 
   // Persist selected channel (store essential fields only)
   useEffect(() => {
@@ -45,7 +47,7 @@ function App() {
     }
   }, [selectedChannel]);
 
-  // Handlers (also save immediately for snappier persistence)
+  // Handlers
   const handleCategorySelect = (slug) => {
     setSelectedCategory(slug);
     setSelectedChannel(null);
@@ -62,13 +64,6 @@ function App() {
     }
   };
 
-  const handleLanguageChange = (lang) => {
-    setSelectedLanguage(lang);
-    setSelectedCategory(null);
-    setSelectedChannel(null);
-    saveState({ selectedLanguage: lang, selectedCategory: null, selectedChannel: null });
-  };
-
   return (
     <div className="app-container">
       {/* Header */}
@@ -77,7 +72,10 @@ function App() {
         <button
           className="ghost"
           aria-label="Open channels"
-          onClick={() => setDrawerOpen((o) => !o)}
+          onClick={() => {
+            setDrawerFreshOpen(true);          // ← show Categories first
+            setDrawerOpen(true);
+          }}
           title="Channels"
         >
           ☰
@@ -115,38 +113,17 @@ function App() {
       {/* Main content */}
       {view === 'tv' ? (
         <div className="app-content">
-          {/* Sidebar (desktop) */}
+          {/* Sidebar (desktop): headings removed for a cleaner UI */}
           <aside className="channel-list">
-            <div style={{ marginBottom: 10 }}>
-              <h3
-                style={{
-                  margin: '6px 0 8px',
-                  fontSize: 14,
-                  opacity: 0.8,
-                  letterSpacing: '.08em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Categories
-              </h3>
-              <CategoryList
-                selectedCategorySlug={selectedCategory}
-                onSelect={handleCategorySelect}
-              />
-            </div>
+            <CategoryList
+              selectedCategorySlug={selectedCategory}
+              onSelect={handleCategorySelect}
+            />
 
-            <div>
-              <h3
-                style={{
-                  margin: '12px 0 8px',
-                  fontSize: 14,
-                  opacity: 0.8,
-                  letterSpacing: '.08em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Channels
-              </h3>
+            <div style={{ height: 12 }} />
+
+            {/* Only show ChannelList AFTER a category is chosen */}
+            {selectedCategory && (
               <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: 6 }}>
                 <ChannelList
                   selectedCategorySlug={selectedCategory}
@@ -154,13 +131,13 @@ function App() {
                   selectedId={selectedChannel?.id}
                 />
               </div>
-            </div>
+            )}
           </aside>
 
           {/* Player (desktop & mobile) */}
           <main>
             <div className="video-player-container">
-              <Player channel={selectedChannel} onLanguageChange={handleLanguageChange} />
+              <Player channel={selectedChannel} />
 
               {/* Logo under the player */}
               <div
@@ -203,57 +180,40 @@ function App() {
         </div>
 
         <div style={{ marginTop: 12 }}>
-          <h3
-            style={{
-              margin: '6px 0 8px',
-              fontSize: 14,
-              opacity: 0.8,
-              letterSpacing: '.08em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Categories
-          </h3>
+          {/* Drawer always shows Categories first */}
           <CategoryList
             selectedCategorySlug={selectedCategory}
             onSelect={(slug) => {
               setSelectedCategory(slug);
               setSelectedChannel(null);
               saveState({ selectedCategory: slug, selectedChannel: null });
-              // keep drawer open to pick a channel
+              setDrawerFreshOpen(false);       // ← now show channels in this drawer session
             }}
           />
         </div>
 
-        <div style={{ marginTop: 12 }}>
-          <h3
-            style={{
-              margin: '12px 0 8px',
-              fontSize: 14,
-              opacity: 0.8,
-              letterSpacing: '.08em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Channels
-          </h3>
-          <div style={{ maxHeight: '55vh', overflowY: 'auto', paddingRight: 6 }}>
-            <ChannelList
-              selectedCategorySlug={selectedCategory}
-              onSelect={(ch) => {
-                setSelectedChannel(ch);
-                if (ch) {
-                  const { id, name, url, source, stream_url, backup, logo } = ch;
-                  saveState({ selectedChannel: { id, name, url, source, stream_url, backup, logo } });
-                } else {
-                  saveState({ selectedChannel: null });
-                }
-                setDrawerOpen(false); // close after picking a channel
-              }}
-              selectedId={selectedChannel?.id}
-            />
+        {/* Show Channels in drawer only after a category was chosen _in this session_ */}
+        {!drawerFreshOpen && selectedCategory && (
+          <div style={{ marginTop: 12 }}>
+            {/* Channels list (no heading) */}
+            <div style={{ maxHeight: '55vh', overflowY: 'auto', paddingRight: 6 }}>
+              <ChannelList
+                selectedCategorySlug={selectedCategory}
+                onSelect={(ch) => {
+                  setSelectedChannel(ch);
+                  if (ch) {
+                    const { id, name, url, source, stream_url, backup, logo } = ch;
+                    saveState({ selectedChannel: { id, name, url, source, stream_url, backup, logo } });
+                  } else {
+                    saveState({ selectedChannel: null });
+                  }
+                  setDrawerOpen(false); // close after picking a channel
+                }}
+                selectedId={selectedChannel?.id}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* --- Footer --- */}

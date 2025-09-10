@@ -67,6 +67,62 @@ export const channels = [
         "https://rbmn-live.akamaized.net/hls/live/622817/BoRB-US/master_928.m3u8"
       ),
   },
+
+  {
+    id: "tvcultura",
+    name: "TV Cultura",
+    language: "Português",
+    category: "News",
+    source: "https://player-tvcultura.stream.uol.com.br/live/tvcultura.m3u8",
+    // backup: "https://<another-valid-hls-if-you-have-it>"
+  }
+  // {
+  //   id: 'tpa-noticias',
+  //   name: 'TPA Notícias',
+  //   category: { slug: 'news', name: 'News' },
+  //   logo: '/logos/tpa-noticias.png',
+  //   type: 'youtube',           // ← tell the player how to render
+  //   url: 'https://www.youtube.com/@TPANoticias/live'
+  // },
+  // {
+  //   id: 'tpa-noticias',
+  //   name: 'TPA Notícias',
+  //   category: { slug: 'news', name: 'News' },
+  //   language: { code: 'pt', name: 'Portuguese' },
+  //   logo: '/logos/tpa-noticias.png',
+  //   type: 'youtube',
+  //   url: 'https://www.youtube.com/@TPANOTICIAS-OFICIAL/streams',
+  //   backup: 'https://tpaonline.ao/directo/'
+  // },
+  // {
+  //   id: 'africanews-en',
+  //   name: 'Africanews (EN)',
+  //   category: { slug: 'news', name: 'News' },
+  //   language: { code: 'en', name: 'English' },
+  //   logo: '/logos/africanews.png',
+  //   type: 'youtube',
+  //   url: 'https://www.youtube.com/@africanews/streams',
+  //   backup: 'https://www.africanews.com/live/'
+  // },
+  // {
+  //   id: 'sabc-news',
+  //   name: 'SABC News',
+  //   category: { slug: 'news', name: 'News' },
+  //   language: { code: 'en', name: 'English' },
+  //   logo: '/logos/sabc-news.png',
+  //   type: 'youtube',
+  //   url: 'https://www.youtube.com/@sabcdigitalnews/streams'
+  // },
+  // {
+  //   id: 'tvc-news',
+  //   name: 'TVC News Nigeria',
+  //   category: { slug: 'news', name: 'News' },
+  //   language: { code: 'en', name: 'English' },
+  //   logo: '/logos/tvc-news.png',
+  //   type: 'youtube',
+  //   url: 'https://www.tvcnews.tv/',
+  //   backup: 'https://www.tvcnews.tv/live-streaming/'
+  // }
 ];
 
 export default channels;
