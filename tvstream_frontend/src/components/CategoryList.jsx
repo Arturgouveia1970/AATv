@@ -1,58 +1,50 @@
+// src/components/CategoryList.jsx
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { fetchCategoriesSmart } from '../services/dataSource';
 
 export default function CategoryList({ selectedCategorySlug, onSelect }) {
-  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
 
   useEffect(() => {
-    async function load() {
+    let alive = true;
+    (async () => {
       try {
-        const data = await fetchCategoriesSmart();
-        setCategories(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error('Failed to load categories', err);
+        setLoading(true);
+        const cats = await fetchCategoriesSmart();
+        if (alive) setCategories(cats);
+      } catch (e) {
+        if (alive) setErr(e);
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
-    }
-    load();
+    })();
+    return () => { alive = false; };
   }, []);
 
-  if (loading) {
-    return <p>{t('loading')}...</p>;
-  }
+  if (loading) return <div className="cat-note">Loading…</div>;
+  if (err) return <div className="cat-note">Failed to load categories.</div>;
+  if (!categories?.length) return <div className="cat-note">No categories.</div>;
 
   return (
-    <div>
-      <h2>{t('')}</h2>
-      <ul style={{ listStyle: 'none', paddingLeft: 0 , marginTop: 50 }}>
-        {categories.map(cat => {
-          // Handle both object and string
-          const slug = typeof cat === 'object' ? cat.slug || cat.id || String(cat) : String(cat);
-          const label = typeof cat === 'object' ? cat.name || cat.slug || String(cat) : String(cat);
-
-          return (
-            <li key={slug} style={{ marginBottom: '0.5rem' }}>
-              <button
-                onClick={() => onSelect(slug)}
-                style={{
-                  backgroundColor: selectedCategorySlug === slug ? '#007bff' : '#f0f0f0',
-                  color: selectedCategorySlug === slug ? '#fff' : '#000',
-                  border: 'none',
-                  padding: '0.5rem 1rem',
-                  cursor: 'pointer',
-                  borderRadius: '4px',
-                }}
-              >
-                {t(slug, label)}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <ul className="cat-list" role="listbox" aria-label="Categories">
+      {categories.map((c) => {
+        const active = c.slug === selectedCategorySlug;
+        return (
+          <li key={c.slug}>
+            <button
+              type="button"
+              className={`cat-item ${active ? 'is-active' : ''}`}
+              onClick={() => onSelect?.(c.slug)}
+              aria-pressed={active}
+            >
+              <span className="cat-name">{c.name}</span>
+              <span className="cat-dot" aria-hidden="true" />
+            </button>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

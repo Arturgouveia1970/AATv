@@ -673,6 +673,106 @@ button:where(.ghost, .link):hover {
   aside.channel-list { display: none; }
 }
 
+/* ---- Category sidebar polish ---- */
+:root {
+  --cat-bg: #141414;
+  --cat-item-bg: #1b1b1b;
+  --cat-item-hover: #242424;
+  --cat-item-active: #2a2a2a;
+  --cat-text: #e9e9e9;
+  --cat-dim: #b8b8b8;
+  --cat-border: #2b2b2b;
+  --accent: #ff5a1f; /* AATv pop; tweak if you like */
+}
+
+.channel-list { /* your existing aside wrapper */
+  /* no layout changes here; we only style inner elements */
+}
+
+.cat-note {
+  color: var(--cat-dim);
+  font-size: 0.92rem;
+  padding: 8px 10px;
+}
+
+/* Vertical, uniform buttons */
+.cat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--cat-bg);
+  border-radius: 12px;
+  border: 1px solid var(--cat-border);
+}
+
+.cat-list > li + li {
+  border-top: 1px solid var(--cat-border);
+}
+
+.cat-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  width: 100%;
+  min-height: 42px;          /* uniform height */
+  padding: 10px 12px;
+  background: var(--cat-item-bg);
+  color: var(--cat-text);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 120ms ease, box-shadow 120ms ease, transform 80ms ease;
+}
+
+.cat-item:hover {
+  background: var(--cat-item-hover);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.cat-item:active {
+  transform: translateY(0.5px);
+}
+
+/* Selected state: subtle, not “primary blue” */
+.cat-item.is-active {
+  background: var(--cat-item-active);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.cat-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Decorative dot that lights up on active/hover */
+.cat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: transparent;
+  transition: background 120ms ease;
+}
+
+.cat-item:hover .cat-dot {
+  background: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.cat-item.is-active .cat-dot {
+  background: var(--accent);
+}
+
+/* Optional: nicer focus ring for keyboard users */
+.cat-item:focus-visible {
+  box-shadow:
+    0 0 0 2px #000,
+    0 0 0 3px var(--accent);
+}
+
+
 
 
 
