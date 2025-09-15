@@ -54,6 +54,228 @@ export const channels: Channel[] = [
     source: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
     backup: "https://rbmn-live.akamaized.net/hls/live/622817/BoRB-US/master_928.m3u8",
   },
+
+  {
+    id: "tvcultura",
+    name: "TV Cultura",
+    language: "Português",
+    category: "News",
+    source: "https://player-tvcultura.stream.uol.com.br/live/tvcultura.m3u8",
+    // backup: "https://<another-valid-hls-if-you-have-it>"
+  },
+  {
+    id: "rai-news",
+    name: "Rai News 24 (Italian)",
+    language: "Italian",
+    category: "News",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://rainews1-live.akamaized.net/hls/live/598326/rainews1/rainews1/playlist.m3u8",
+  },
+  {
+    id: "arirang",
+    name: "Arirang TV",
+    language: "English",
+    category: "News",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://amdlive-ch01-ctnd-com.akamaized.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8",
+  },
+  {
+    id: "tv5monde",
+    name: "TV5Monde (French)",
+    language: "French",
+    category: "International",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://tv5mondehlslive.akamaized.net/hls/live/2017074/tv5monde/high/master.m3u8",
+  }, {
+    id: "smithsonian",
+    name: "Smithsonian Channel",
+    language: "English",
+    category: "Documentary",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://smithsonianaus-samsungau.amagi.tv/playlist.m3u8",
+  },
+  {
+    id: "pbs-news",
+    name: "PBS News",
+    language: "English",
+    category: "News",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://pbs-newshour.streamguys1.com/live/newshour-audio-1/master.m3u8", // Audio stream
+  },
+  {
+    id: "nasa-public",
+    name: "NASA Public Channel",
+    language: "English",
+    category: "Documentary",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8",
+  },
+  {
+    id: "france24-en",
+    name: "France 24 (English)",
+    language: "English",
+    category: "News",
+    icon: "data:image/png;base64,iVBORw0KGgo=", // You can find a base64 icon for France24
+    source: "https://static.france24.com/live/F24_EN_HI_HLS/live_web.m3u8",
+  },
+  {
+    id: "bbc-worldnews",
+    name: "BBC World News",
+    language: "English",
+    category: "News",
+    icon: "data:image/png;base64,iVBORw0KGgo=", // Find a BBC icon
+    source: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+  },
+  {
+    id: "bloomberg",
+    name: "Bloomberg TV",
+    language: "English",
+    category: "News",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://www.bloomberg.com/media-manifest/streams/us.m3u8",
+  },
+  {
+    id: "euronews-en",
+    name: "Euronews (English)",
+    language: "English",
+    category: "News",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://euronews-euronews-english-1-gb.samsung.wurl.com/manifest_1080p.m3u8",
+  },
+
+  // ---- MUSIC ----
+  {
+    id: "rockzilla-tv",
+    name: "Rockzilla TV",
+    language: "N/A",
+    category: "Music",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://rockzillatv.rocks/stream/rockzillatv/playlist.m3u8",
+  },
+  {
+    id: "nostalgia-hits",
+    name: "Nostalgia Hits",
+    language: "N/A",
+    category: "Music",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://stream.nstg.tv/hits/sd/index.m3u8",
+  },
+
+  // ---- ENTERTAINMENT & LIFESTYLE ----
+  {
+    id: "pets-tv",
+    name: "Pets TV",
+    language: "N/A",
+    category: "Lifestyle",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://pets-tv.live.stream.geo.akamaized.net/amagi_hls_data_petXXA-pet-tv/CDN/playlist.m3u8",
+  },
+  {
+    id: "fashion-tv",
+    name: "Fashion TV",
+    language: "N/A",
+    category: "Lifestyle",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://fash1043.cloudycdn.services/slive/_definst_/ftv_paris_adaptive.smil/playlist.m3u8",
+  },
+  {
+    id: "diy-network",
+    name: "DIY Network",
+    language: "English",
+    category: "Entertainment",
+    icon: "data:image/png;base64,iVBORw0KGgo=",
+    source: "https://dai.google.com/linear/hls/event/TxL4NjSeRlC0aRtOc5eA7g/master.m3u8", // Streams may vary
+  },
+  {
+    id: 'aatv-test-sintel',
+    name: 'AATv Test (Sintel)',
+    logo: '/icons/AATv_icons/AATv_48x48.png',
+    category: { slug: 'test', name: 'Test' },           // object form
+    language: { code: 'en', name: 'English' },          // object form
+    stream_url: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+    url:        'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+    source:     'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+    backup:     'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+  },
+  {
+    id: "nhk-world",
+    name: "NHK World-Japan",
+    language: "English",
+    category: "News",
+    source: "https://nhkworld.webcdn.stream.ne.jp/www11/hls/live/2003458/nhkworld/index.m3u8"
+  },
+  {
+    id: "trt-world",
+    name: "TRT World",
+    language: "English",
+    category: "News",
+    source: "https://tv-trtworld.live.trt.com.tr/master_1080.m3u8"
+  },
+  {
+    id: "cgtn-en",
+    name: "CGTN (English)",
+    language: "English",
+    category: "News",
+    source: "https://news.cgtn.com/resource/live/english/cgtn-news.m3u8"
+  },
+  {
+    id: "alarabiya",
+    name: "Al Arabiya",
+    language: "Arabic",
+    category: "News",
+    source: "https://live.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8"
+  }
+  
+  
+  
+  // {
+  //   id: 'tpa-noticias',
+  //   name: 'TPA Notícias',
+  //   category: { slug: 'news', name: 'News' },
+  //   logo: '/logos/tpa-noticias.png',
+  //   type: 'youtube',           // ← tell the player how to render
+  //   url: 'https://www.youtube.com/@TPANoticias/live'
+  // },
+  // {
+  //   id: 'tpa-noticias',
+  //   name: 'TPA Notícias',
+  //   category: { slug: 'news', name: 'News' },
+  //   language: { code: 'pt', name: 'Portuguese' },
+  //   logo: '/logos/tpa-noticias.png',
+  //   type: 'youtube',
+  //   url: 'https://www.youtube.com/@TPANOTICIAS-OFICIAL/streams',
+  //   backup: 'https://tpaonline.ao/directo/'
+  // },
+  // {
+  //   id: 'africanews-en',
+  //   name: 'Africanews (EN)',
+  //   category: { slug: 'news', name: 'News' },
+  //   language: { code: 'en', name: 'English' },
+  //   logo: '/logos/africanews.png',
+  //   type: 'youtube',
+  //   url: 'https://www.youtube.com/@africanews/streams',
+  //   backup: 'https://www.africanews.com/live/'
+  // },
+  // {
+  //   id: 'sabc-news',
+  //   name: 'SABC News',
+  //   category: { slug: 'news', name: 'News' },
+  //   language: { code: 'en', name: 'English' },
+  //   logo: '/logos/sabc-news.png',
+  //   type: 'youtube',
+  //   url: 'https://www.youtube.com/@sabcdigitalnews/streams'
+  // },
+  // {
+  //   id: 'tvc-news',
+  //   name: 'TVC News Nigeria',
+  //   category: { slug: 'news', name: 'News' },
+  //   language: { code: 'en', name: 'English' },
+  //   logo: '/logos/tvc-news.png',
+  //   type: 'youtube',
+  //   url: 'https://www.tvcnews.tv/',
+  //   backup: 'https://www.tvcnews.tv/live-streaming/'
+  // }
+
 ];
 
 export default channels;
