@@ -772,20 +772,85 @@ button:where(.ghost, .link):hover {
     0 0 0 3px var(--accent);
 }
 
+/* Distinct look for ChannelList vs CategoryList */
+:root{
+  --chan-bg: #0f1115;           /* darker card than categories */
+  --chan-item-bg: #141720;
+  --chan-item-hover: #1a1f2b;
+  --chan-item-active: #1e2432;
+  --chan-border: #222838;
+  --accent: #ff5a1f;            /* reuse your accent */
+}
 
+.chan-box{
+  background: var(--chan-bg);
+  border: 1px solid var(--chan-border);
+  border-radius: 12px;
+  padding: 8px;                 /* breathes inside the card */
+}
 
+.chan-list > li { margin: 0 0 6px 0; }
+.chan-list > li:last-child { margin-bottom: 0; }
 
+/* Reuse your existing .chip but add stronger states for channel items */
+.chan-item{
+  transition: background 120ms ease, box-shadow 120ms ease, transform 80ms ease;
+}
+.chan-item:hover{
+  background: var(--chan-item-hover);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.chan-item.active{
+  background: var(--chan-item-active) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.chan-item:focus-visible{
+  outline: none;
+  box-shadow:
+    0 0 0 2px #000,
+    0 0 0 3px var(--accent);
+}
 
+/* CategoryList theme (warm slate + orange accent) */
+.cat-list {
+  --accent: #ff5a1f;      /* stays orange */
+  --cat-bg: #141414;
+  --cat-item-bg: #1b1b1b;
+  --cat-item-hover: #242424;
+  --cat-item-active: #2a2a2a;
+  --cat-border: #2b2b2b;
+  --cat-text: #e9e9e9;
+}
 
+/* ChannelList theme (navy + teal accent) */
+.chan-box {
+  /* distinct palette */
+  --accent: #17c3b2;      /* teal just for channels */
+  --chan-bg: #0c1220;     /* darker, bluish base */
+  --chan-item-bg: #111a2e;
+  --chan-item-hover: #15213a;
+  --chan-item-active: #192845;
+  --chan-border: #1b2a40;
 
+  background: var(--chan-bg);
+  border: 1px solid var(--chan-border);
+  border-radius: 12px;
+  padding: 8px;
+}
 
+.chan-item {
+  background: var(--chan-item-bg) !important;
+  border: 1px solid var(--chan-border) !important;
+}
 
+.chan-item:hover {
+  background: var(--chan-item-hover) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+}
 
-
-
-
-
-
-
+.chan-item.active {
+  background: var(--chan-item-active) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
+}
 
 

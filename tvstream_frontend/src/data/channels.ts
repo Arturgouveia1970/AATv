@@ -210,6 +210,35 @@ export const channels = [
     source:     'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
     backup:     'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
   },
+  {
+    id: "nhk-world",
+    name: "NHK World-Japan",
+    language: "English",
+    category: "News",
+    source: "https://nhkworld.webcdn.stream.ne.jp/www11/hls/live/2003458/nhkworld/index.m3u8"
+  },
+  {
+    id: "trt-world",
+    name: "TRT World",
+    language: "English",
+    category: "News",
+    source: "https://tv-trtworld.live.trt.com.tr/master_1080.m3u8"
+  },
+  {
+    id: "cgtn-en",
+    name: "CGTN (English)",
+    language: "English",
+    category: "News",
+    source: "https://news.cgtn.com/resource/live/english/cgtn-news.m3u8"
+  },
+  {
+    id: "alarabiya",
+    name: "Al Arabiya",
+    language: "Arabic",
+    category: "News",
+    source: "https://live.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8"
+  }
+  
   
   
   // {

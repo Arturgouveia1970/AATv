@@ -68,7 +68,7 @@ export default function ChannelList({ selectedCategorySlug, selectedId, onSelect
               <img
                 src={ch.logo}
                 alt=""
-                style={{ height: 18, width: 18, objectFit: 'contain', opacity: .9 }}
+                style={{ height: 20, width: 24, objectFit: 'contain', opacity: .9 }}
               />
             )}
             <span style={{ textAlign: 'left' }}>{ch.name}</span>
