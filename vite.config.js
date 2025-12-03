@@ -23,39 +23,28 @@ export default defineConfig({
         background_color: '#0f172a',
         theme_color: '#0f172a',
         icons: [
-          {
-            src: 'icons/AATv_icons/AATv_192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: 'icons/AATv_icons/AATv_512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
+          { src: 'icons/AATv_icons/AATv_192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+          { src: 'icons/AATv_icons/AATv_512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ]
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Don’t cache HLS; force network.
         runtimeCaching: [
           {
-            urlPattern: ({ url }) =>
-              url.pathname.endsWith('.m3u8') || url.pathname.endsWith('.ts'),
+            urlPattern: ({ url }) => url.pathname.endsWith('.m3u8') || url.pathname.endsWith('.ts'),
             handler: 'NetworkOnly'
           }
         ]
       }
     })
-    
-    
-    
   ],
   server: {
     port: 3000,
+    strictPort: true,
+    // If you want HTTPS in dev (optional):
+    // https: true,
     proxy: {
-      // Existing CGTN setup (unchanged)
       '/cgtn': {
         target: 'https://live.cgtn.com',
         changeOrigin: true,
@@ -86,12 +75,11 @@ export default defineConfig({
         }
       },
 
-      // Generic HLS proxy → your Node hls-proxy.mjs server
+      // HLS proxy → your node server at 5174
       '/hls': {
         target: 'http://localhost:5174',
         changeOrigin: true,
-        // do not rewrite path or strip query
-        rewrite: (p) => p,
+        rewrite: (p) => p, // keep query string intact
         configure: (proxy) => {
           proxy.on('error', (err, _req, res) => {
             console.error('[vite-proxy] HLS error:', err?.message || err)

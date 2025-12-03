@@ -1,4 +1,4 @@
-export type StreamType = 'hls' | 'mp4' | 'dash';
+export type StreamType = 'hls' | 'mp4' | 'dash' | 'youtube';
 
 export interface Channel {
   id: string;                 // slug: "cgtn-en"

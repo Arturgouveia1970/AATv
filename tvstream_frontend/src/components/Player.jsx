@@ -3,17 +3,55 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import HlsPlayer from './HlsPlayer'
 import { isHls, alreadyProxied, withApiProxy } from '../lib/hls'
 
-function toYouTubeEmbed(url) {
+function toYouTubeEmbed(url, opts = {}) {
+  const explicitChannelId = opts.youtubeChannelId
   try {
     const u = new URL(url)
-    const host = u.hostname.replace(/^www\./, '')
+    const host = u.hostname.replace(/^www\./, '').toLowerCase()
     let id = null
+
+    // Short links: https://youtu.be/VIDEO_ID
     if (host === 'youtu.be') id = u.pathname.slice(1)
-    if (/youtube\.com|youtube-nocookie\.com/i.test(host)) {
-      if (u.pathname === '/watch') id = u.searchParams.get('v')
-      if (u.pathname.startsWith('/live/')) id = u.pathname.split('/')[2]
-      if (u.pathname.startsWith('/embed/')) id = u.pathname.split('/')[2]
+
+    // Standard domains
+    if (/^(youtube\.com|youtube-nocookie\.com)$/.test(host)) {
+      const p = u.pathname
+
+      // https://youtube.com/watch?v=VIDEO_ID
+      if (p === '/watch') id = u.searchParams.get('v')
+
+      // https://youtube.com/live/VIDEO_ID
+      if (p.startsWith('/live/')) id = p.split('/')[2]
+
+      // https://youtube.com/embed/VIDEO_ID
+      if (p.startsWith('/embed/')) id = p.split('/')[2]
+
+      // https://youtube.com/channel/UCxxxx/live  → live_stream by channel id
+      if (p.startsWith('/channel/') && p.endsWith('/live')) {
+        const channelId = p.split('/')[2]
+        const embed = new URL('https://www.youtube-nocookie.com/embed/live_stream')
+        embed.searchParams.set('channel', channelId)
+        embed.searchParams.set('autoplay', '1')
+        embed.searchParams.set('playsinline', '1')
+        embed.searchParams.set('rel', '0')
+        return embed.toString()
+      }
+
+      // https://youtube.com/@handle/live → needs channel id (not present in URL)
+      if (p.startsWith('/@') && p.endsWith('/live')) {
+        if (explicitChannelId) {
+          const embed = new URL('https://www.youtube-nocookie.com/embed/live_stream')
+          embed.searchParams.set('channel', explicitChannelId)
+          embed.searchParams.set('autoplay', '1')
+          embed.searchParams.set('playsinline', '1')
+          embed.searchParams.set('rel', '0')
+          return embed.toString()
+        }
+        // No channel id available → cannot embed this form directly
+        return null
+      }
     }
+
     if (!id) return null
     const embed = new URL(`https://www.youtube-nocookie.com/embed/${id}`)
     embed.searchParams.set('autoplay', '1')
@@ -28,9 +66,12 @@ function toYouTubeEmbed(url) {
 export default function Player({ channel, onBackupChange }) {
   if (!channel) return <p style={{ padding: '1rem' }}>Select a channel to play</p>
 
+  // Canonical primary/backup resolution (keeps legacy fields working)
   const primary = channel.source || channel.file || channel.url || channel.stream_url || ''
   const backup  = channel.backup || ''
-  const declaredType = (channel.type || '').toLowerCase()
+
+  // Accept both legacy `type` and your TS `streamType`
+  const declaredType = (channel.type || channel.streamType || '').toLowerCase()
 
   const [currentOrig, setCurrentOrig] = useState(primary)
   const [currentPlay, setCurrentPlay] = useState(primary)
@@ -50,10 +91,23 @@ export default function Player({ channel, onBackupChange }) {
 
   const isYouTube = useMemo(() => {
     if (declaredType === 'youtube') return true
-    return /(?:youtu\.be|youtube\.com)/i.test(currentPlay)
+    return /(?:youtu\.be|youtube\.com|youtube-nocookie\.com)/i.test(currentPlay)
   }, [declaredType, currentPlay])
 
-  const ytEmbed = useMemo(() => (isYouTube ? toYouTubeEmbed(currentPlay) : null), [isYouTube, currentPlay])
+  const ytEmbed = useMemo(() => (
+    isYouTube ? toYouTubeEmbed(currentPlay, { youtubeChannelId: channel.youtubeChannelId }) : null
+  ), [isYouTube, currentPlay, channel?.youtubeChannelId])
+
+  // Best-effort “Open on YouTube” target
+  const openOnYouTubeHref = useMemo(() => {
+    const src = String(channel?.source || currentOrig || currentPlay || '')
+    if (src) return src
+    if (channel?.youtubeChannelId) {
+      return `https://www.youtube.com/channel/${channel.youtubeChannelId}/live`
+    }
+    return null
+  }, [channel?.source, channel?.youtubeChannelId, currentOrig, currentPlay])
+
   const hls = !isYouTube && isHls(currentPlay)
 
   const tryProxyThenBackup = useCallback(() => {
@@ -77,7 +131,10 @@ export default function Player({ channel, onBackupChange }) {
 
   if (failed) {
     return (
-      <div className="flex items-center justify-center bg-black text-white" style={{ height: 400 }}>
+      <div style={{
+        height: 400, background: '#000', color: '#fff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
         <p>📺 {channel.name} — coming shortly…</p>
       </div>
     )
@@ -86,7 +143,7 @@ export default function Player({ channel, onBackupChange }) {
   return (
     <div className="video-frame">
       {isYouTube && ytEmbed ? (
-        <div className="aspect-video" style={{ background: '#000' }}>
+        <div style={{ aspectRatio: '16 / 9', position: 'relative', background: '#000' }}>
           <iframe
             key={ytEmbed}
             src={ytEmbed}
@@ -97,6 +154,59 @@ export default function Player({ channel, onBackupChange }) {
             style={{ width: '100%', height: '100%', border: 0 }}
             onError={tryProxyThenBackup}
           />
+          {openOnYouTubeHref && (
+            <a
+              href={openOnYouTubeHref}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                position: 'absolute',
+                right: 8,
+                bottom: 8,
+                fontSize: 12,
+                padding: '6px 10px',
+                background: 'rgba(0,0,0,0.6)',
+                color: '#fff',
+                borderRadius: 6,
+                textDecoration: 'none'
+              }}
+            >
+              Open on YouTube ↗
+            </a>
+          )}
+        </div>
+      ) : isYouTube && !ytEmbed ? (
+        <div style={{
+          aspectRatio: '16 / 9',
+          background: '#000',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: 8,
+          padding: 16
+        }}>
+          <div style={{ opacity: 0.85, marginBottom: 4 }}>
+            {channel?.name || 'YouTube stream'} can’t be embedded.
+          </div>
+          {openOnYouTubeHref && (
+            <a
+              href={openOnYouTubeHref}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                fontSize: 14,
+                padding: '8px 12px',
+                background: '#2563eb',
+                color: '#fff',
+                borderRadius: 8,
+                textDecoration: 'none'
+              }}
+            >
+              Open on YouTube ↗
+            </a>
+          )}
         </div>
       ) : hls ? (
         <HlsPlayer
