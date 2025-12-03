@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "kill:proxy": "lsof -ti :5174 | xargs kill -9 || true",
-    "dev:proxy": "HLS_ALLOW_RELAXED=true PORT=5174 node ../hls-proxy.mjs",
+    "dev:proxy": "HLS_ALLOW_RELAXED=true PORT=5174 node ./hls-proxy.mjs",
     "dev": "npm run kill:proxy && concurrently -k --names \"PROXY,APP\" --prefix-colors \"yellow,cyan\" \"npm:dev:proxy\" \"vite --open\"",
     "build": "vite build",
     "lint": "eslint .",
