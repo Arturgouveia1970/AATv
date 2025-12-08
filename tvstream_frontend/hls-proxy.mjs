@@ -32,8 +32,12 @@ const HOST_CONFIG = {
   'dwamdstream102.akamaized.net': {},
   'dwamdstream101.akamaized.net': {},
 
-  // CNA
-  'd2e1asnsl7br7b.cloudfront.net': {},
+  // CNA (needs referer on some edges)
+  'd2e1asnsl7br7b.cloudfront.net': {
+    referer: 'https://www.channelnewsasia.com/',
+    origin:  'https://www.channelnewsasia.com',
+  },
+
 
   // Red Bull TV
   'rbmn-live.akamaized.net': {},
